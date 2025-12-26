@@ -1,8 +1,8 @@
 from flask import Flask, request
 import sqlite3
 import subprocess
-import hashlib
 import os
+import bcrypt
 app = Flask(__name__)
 SECRET_KEY = "dev-secret-key-12345"   # Hardcoded secret
 @app.route("/login", methods=["POST"])
@@ -42,7 +42,9 @@ def compute():
 @app.route("/hash", methods=["POST"])
 def hash_password():
     pwd = request.json.get("password", "admin")
-    hashed = hashlib.md5(pwd.encode()).hexdigest()
+    #hashed = hashlib.md5(pwd.encode()).hexdigest()
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(pwd.encode(), salt)
     return {"md5": hashed}
 @app.route("/readfile", methods=["POST"])
 def readfile():
